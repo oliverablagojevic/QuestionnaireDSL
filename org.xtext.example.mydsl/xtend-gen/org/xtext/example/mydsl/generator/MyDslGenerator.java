@@ -3,10 +3,16 @@
  */
 package org.xtext.example.mydsl.generator;
 
+import com.google.common.collect.Iterables;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
+import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.IteratorExtensions;
+import org.xtext.example.mydsl.generator.QuestionnaireDsl;
+import questionnaireModel.PollSystem;
 
 /**
  * Generates code from your model files on save.
@@ -17,5 +23,8 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 public class MyDslGenerator extends AbstractGenerator {
   @Override
   public void doGenerate(final Resource resource, final IFileSystemAccess2 fsa, final IGeneratorContext context) {
+    PollSystem pollsystem = ((PollSystem[])Conversions.unwrapArray((Iterables.<PollSystem>filter(IteratorExtensions.<EObject>toIterable(resource.getAllContents()), PollSystem.class)), PollSystem.class))[0];
+    QuestionnaireDsl dsl = new QuestionnaireDsl(pollsystem);
+    fsa.generateFile(".html", dsl.pollSystemToHtml());
   }
 }
